@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "206439705608",
+    "project_id": "market-mobile-27138",
+    "storage_bucket": "market-mobile-27138.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206439705608:android:787277e0f2dc054da675bd",
+        "android_client_info": {
+          "package_name": "com.example.client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaOedckIo0fw5XqvtL6w5eVFFIh15mqOk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
