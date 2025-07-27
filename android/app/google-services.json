@@ -1,13 +1,32 @@
 {
   "project_info": {
-    "project_number": "206439705608",
-    "project_id": "market-mobile-27138",
-    "storage_bucket": "market-mobile-27138.firebasestorage.app"
+    "project_number": "1002786344627",
+    "project_id": "market-connect-780fa",
+    "storage_bucket": "market-connect-780fa.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:206439705608:android:787277e0f2dc054da675bd",
+        "mobilesdk_app_id": "1:1002786344627:android:4e4c73994720518c596ac6",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyHHAG8hNsvee4y37041tEc6brp_nGyBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002786344627:android:f195b01e48384628596ac6",
         "android_client_info": {
           "package_name": "com.example.client"
         }
@@ -15,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDaOedckIo0fw5XqvtL6w5eVFFIh15mqOk"
+          "current_key": "AIzaSyCyHHAG8hNsvee4y37041tEc6brp_nGyBw"
         }
       ],
       "services": {

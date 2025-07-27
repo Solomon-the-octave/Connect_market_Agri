@@ -23,3 +23,9 @@ pubspec.lock
 *.dll
 *.so
 *.dylib
+
+# Firebase credentials
+# IMPORTANT: Never commit these files to a public repository!
+google-services.json
+GoogleService-Info.plist
+lib/firebase_options.dart
