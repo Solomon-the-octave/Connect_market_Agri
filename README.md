@@ -90,9 +90,8 @@ The project follows a standard Flutter application structure, with a clear separ
 lib/
 ├── services/       # Backend services (e.g., AuthService, CartService)
 ├── screens/        # UI for each page of the app
-├── widgets/        # Reusable UI components (e.g., ProductCard, CustomButton)
+    ├── auth/           # Authentication flow widgets (e.g., AuthGate)
 ├── models/         # Data models (e.g., Product, User)
-├── auth/           # Authentication flow widgets (e.g., AuthGate)
 └── main.dart       # The main entry point of the application
 ```
 
