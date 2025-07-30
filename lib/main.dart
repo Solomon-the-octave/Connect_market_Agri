@@ -5,6 +5,12 @@ import 'package:client/screens/splash/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:client/screens/shop_screen.dart';
+import 'package:client/screens/account_screen.dart';
+import 'package:client/screens/explore_screen.dart';
+import 'package:client/screens/favourites_screen.dart';
+import 'package:client/screens/cart_screen.dart';
+import 'package:client/widgets/product_card.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
