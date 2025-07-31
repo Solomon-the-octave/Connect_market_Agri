@@ -1,18 +1,24 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-// Updated color palette inspired by your design
-const primaryGreen = Color(0xFF8B9A7A); // Sage green from your design
-const primaryBlue = Color(0xFF2260FF);
-const primaryBg = Color(0xFFA8B5A0); // Light sage background
-const secondaryGreen = Color(0xFF6B7A5A); // Darker sage
-const tertiaryGreen = Color(0xFF9DAA8C); // Medium sage
-const lightCardColor = Colors.white;
-const lightTextColor = Color(0xFF2C3E2D); // Dark green text
-const lightSecondaryTextColor = Color(0xFF4A5A4B); // Medium green text
+// Color palette matching Figma design
+const primaryGreen = Color(0xFF7A8471);
+const lightGreen = Color(0xFFB8C5A8);
+const darkGreen = Color(0xFF5A6B4F);
+const accentOrange = Color(0xFFE67E22);
+const backgroundColor = Color(0xFFB8C5A8);
+const primaryBg = backgroundColor;
+const lightTextColor = Colors.white;
+const lightCardColor = Color(0xFFEFF3EA);
+const lightSecondaryTextColor = Color(0xFF7A8471);
 
 class MarketConnectAuthScreen extends StatelessWidget {
   const MarketConnectAuthScreen({super.key});
+
+  double _getResponsiveFontSize(BuildContext context, double baseSize) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double scaleFactor = screenWidth / 375; // Base width (iPhone)
+    return baseSize * scaleFactor.clamp(0.8, 1.2);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +67,7 @@ class MarketConnectAuthScreen extends StatelessWidget {
                                 Text(
                                   'Market',
                                   style: TextStyle(
-                                    fontSize:
-                                        _getResponsiveFontSize(context, 48),
+                                    fontSize: _getResponsiveFontSize(context, 48),
                                     fontWeight: FontWeight.bold,
                                     color: lightTextColor,
                                     fontFamily: 'Serif',
@@ -71,8 +76,7 @@ class MarketConnectAuthScreen extends StatelessWidget {
                                 Text(
                                   'Connect',
                                   style: TextStyle(
-                                    fontSize:
-                                        _getResponsiveFontSize(context, 32),
+                                    fontSize: _getResponsiveFontSize(context, 32),
                                     fontWeight: FontWeight.w400,
                                     color: lightTextColor,
                                     fontStyle: FontStyle.italic,
@@ -99,7 +103,7 @@ class MarketConnectAuthScreen extends StatelessWidget {
 
                     // Bottom card section
                     Container(
-                      width: double.infinity / 0.02,
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: lightCardColor,
                         borderRadius: BorderRadius.only(
@@ -116,162 +120,81 @@ class MarketConnectAuthScreen extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(30),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Welcome text
-                            Text(
-                              'Welcome',
-                              style: TextStyle(
-                                fontSize: _getResponsiveFontSize(context, 32),
-                                fontWeight: FontWeight.bold,
-                                color: lightTextColor,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Welcome text
+                              Text(
+                                'Welcome',
+                                style: TextStyle(
+                                  fontSize: _getResponsiveFontSize(context, 32),
+                                  fontWeight: FontWeight.bold,
+                                  color: lightTextColor,
+                                ),
                               ),
-                            ),
 
-                            SizedBox(height: 12),
+                              SizedBox(height: 12),
 
-                            Text(
-                              'Join MarketConnect to buy and sell fresh local produce with ease',
-                              style: TextStyle(
-                                fontSize: _getResponsiveFontSize(context, 16),
-                                color: lightSecondaryTextColor,
-                                height: 1.4,
+                              Text(
+                                'Join MarketConnect to buy and sell fresh local produce with ease',
+                                style: TextStyle(
+                                  fontSize: _getResponsiveFontSize(context, 16),
+                                  color: lightSecondaryTextColor,
+                                  height: 1.4,
+                                ),
                               ),
-                            ),
 
-                            SizedBox(height: 32),
+                              SizedBox(height: 32),
 
-                            // Google Sign In Button
-                            SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  // Handle Google sign in
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.grey[300]!),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                              // Create an account button
+                              Container(
+                                width: double.infinity,
+                                height: 56,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/register');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: primaryGreen,
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
                                   ),
-                                  backgroundColor: Colors.white,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    // Google logo
-                                    Container(
-                                      width: 24,
-                                      height: 24,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.red[500],
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'G',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ),
+                                  child: const Text(
+                                    'Create an account',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                    SizedBox(width: 12),
-                                    Text(
-                                      'Continue with google',
-                                      style: TextStyle(
-                                        fontSize:
-                                            _getResponsiveFontSize(context, 16),
-                                        color: lightTextColor,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(height: 16),
-
-                            // Create Account Button
-                            SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  // Handle create account
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/register',
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: secondaryGreen,
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.person_add_outlined,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Create an account',
-                                      style: TextStyle(
-                                        fontSize:
-                                            _getResponsiveFontSize(context, 16),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
-                            ),
 
-                            SizedBox(height: 24),
+                              const SizedBox(height: 24),
 
-                            // Login link
-                            Center(
-                              child: RichText(
-                                text: TextSpan(
-                                  text: 'Already have an account ? ',
+                              // Login link
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/login');
+                                },
+                                child: Text(
+                                  'Login',
                                   style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize:
-                                        _getResponsiveFontSize(context, 14),
+                                    fontSize: 16,
+                                    color: darkGreen,
+                                    fontWeight: FontWeight.w600,
+                                    decoration: TextDecoration.underline,
                                   ),
-                                  children: [
-                                    TextSpan(
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          Navigator.pushNamed(
-                                            context,
-                                            '/login',
-                                          );
-                                        },
-                                      text: 'Login',
-                                      style: TextStyle(
-                                        color: secondaryGreen,
-                                        fontWeight: FontWeight.w600,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
-                            ),
 
-                            SizedBox(height: 16),
-                          ],
+                              const SizedBox(height: 40),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -283,11 +206,5 @@ class MarketConnectAuthScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  double _getResponsiveFontSize(BuildContext context, double baseSize) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double scaleFactor = screenWidth / 375; // Base width (iPhone)
-    return baseSize * scaleFactor.clamp(0.8, 1.2);
   }
 }

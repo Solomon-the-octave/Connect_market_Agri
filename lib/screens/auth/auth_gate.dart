@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:marketconnect/screens/SplashHomePage.dart';
-import 'package:marketconnect/screens/SplashScreen.dart';
+import 'package:connect_market_agri/screens/splash/SplashHomePage.dart';
+import 'package:connect_market_agri/screens/splash/SplashScreen.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -11,22 +11,19 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        // Show a loading indicator while waiting for connection
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
         // User is not signed in
         if (!snapshot.hasData) {
-          return const SplashScreen();
+          return const MarketConnectSplashScreen();
         }
 
         // User is signed in
-        return const SplashHomePage();
+        return const MarketConnectAuthScreen(); 
       },
     );
   }

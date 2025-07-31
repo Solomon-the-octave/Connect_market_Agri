@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'widgets/product_card.dart';
+import 'widgets/bottom_nav_bar.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -7,7 +8,8 @@ class ExploreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Color(0xFFB8C5A8),
+      bottomNavigationBar: BottomNavBar(currentIndex: 1), 
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -40,9 +42,9 @@ class ExploreScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisSpacing: 12,
+                crossAxisSpacing: 12, 
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.75,
+                childAspectRatio: 3, 
                 children: [
                   ProductCard(
                     imagePath: 'assets/images/vegetables.png',
@@ -63,8 +65,8 @@ class ExploreScreen extends StatelessWidget {
                     price: '',
                   ),
                   ProductCard(
-                    imagePath: 'assets/images/bakery.png',
-                    title: 'Bakery',
+                    imagePath: 'assets/images/flour.png',
+                    title: 'Flour',
                     weight: '72 items',
                     price: '',
                   ),

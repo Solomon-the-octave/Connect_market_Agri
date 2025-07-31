@@ -1,12 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'widgets/bottom_nav_bar.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFB8C5A8),
+      bottomNavigationBar: BottomNavBar(currentIndex: 2),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -24,10 +29,19 @@ class AccountScreen extends StatelessWidget {
             backgroundImage: AssetImage('assets/images/user_avatar.png'),
           ),
           const SizedBox(height: 12),
-          const Center(
-            child: Text(
-              'Gloria Doe',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          Center(
+            child: Column(
+              children: [
+                Text(
+                  user?.displayName ?? 'User',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  user?.email ?? '',
+                  style: const TextStyle(color: Colors.grey, fontSize: 15),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -39,7 +53,11 @@ class AccountScreen extends StatelessWidget {
           accountTile(Icons.help_outline, 'Help & Support'),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              // Optionally: Navigate to login screen
+              Navigator.pushReplacementNamed(context, '/login');
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -64,7 +82,9 @@ class AccountScreen extends StatelessWidget {
           leading: Icon(icon, color: Colors.green),
           title: Text(title),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-          onTap: () {},
+          onTap: () {
+            // TODO: Add navigation or actions
+          },
         ),
         const Divider(),
       ],

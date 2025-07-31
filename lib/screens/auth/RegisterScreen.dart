@@ -19,19 +19,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  String _userType = 'buyer';
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
 
-  // Updated color palette inspired by your design
-  static const primaryGreen = Color(0xFF8B9A7A); // Sage green from your design
-  static const primaryBlue = Color(0xFF2260FF);
-  static const primaryBg = Color(0xFFA8B5A0); // Light sage background
-  static const secondaryGreen = Color(0xFF6B7A5A); // Darker sage
-  static const tertiaryGreen = Color(0xFF9DAA8C); // Medium sage
+  static const primaryGreen = Color(0xFF8B9A7A); 
+  static const lightTextColor = Color(0xFF2C3E2D); 
+  static const primaryBg = Color(0xFFA8B5A0);
+  static const secondaryGreen = Color(0xFF6B7A5A); 
+  static const tertiaryGreen = Color(0xFF9DAA8C); 
   static const lightCardColor = Colors.white;
-  static const lightTextColor = Color(0xFF2C3E2D); // Dark green text
-  static const lightSecondaryTextColor = Color(0xFF4A5A4B); // Medium green text
+  static const lightSecondaryTextColor = Color(0xFF4A5A4B); 
 
   @override
   void dispose() {
@@ -63,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'fullName': _fullNameController.text.trim(),
         'email': _emailController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
-        'role': 'primary_caregiver',
+        'type': _userType,
       });
 
       if (mounted) {
@@ -295,6 +294,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
+
+                        // User Type Selection
+                        Text('Register as:', style: TextStyle(fontWeight: FontWeight.bold, color: lightTextColor)),
+                        Row(
+                          children: [
+                            Radio<String>(
+                              value: 'buyer',
+                              groupValue: _userType,
+                              onChanged: (value) => setState(() => _userType = value!),
+                            ),
+                            const Text('Buyer'),
+                            Radio<String>(
+                              value: 'farmer',
+                              groupValue: _userType,
+                              onChanged: (value) => setState(() => _userType = value!),
+                            ),
+                            const Text('Farmer'),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
 
                         // Full Name Field
                         _buildCustomTextField(

@@ -1,162 +1,226 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
-// Updated color palette inspired by your design
-const primaryGreen = Color(0xFF8B9A7A); // Sage green from your design
-const primaryBlue = Color(0xFF2260FF);
-const primaryBg = Color(0xFFA8B5A0); // Light sage background
-const secondaryGreen = Color(0xFF6B7A5A); // Darker sage
-const tertiaryGreen = Color(0xFF9DAA8C); // Medium sage
-const lightCardColor = Colors.white;
-const lightTextColor = Color(0xFF2C3E2D); // Dark green text
-const lightSecondaryTextColor = Color(0xFF4A5A4B); // Medium green text
+// Color palette matching Figma design
+const primaryGreen = Color(0xFF7A8471); // Main green from Figma
+const lightGreen = Color(0xFFB8C5A8); // Light green background
+const darkGreen = Color(0xFF5A6B4F); // Dark green for text
+const accentOrange = Color(0xFFE67E22); // Orange accent
+const backgroundColor = Color(0xFFB8C5A8); // Background color
 
-class MarketConnectSplashScreen extends StatelessWidget {
+class MarketConnectSplashScreen extends StatefulWidget {
   const MarketConnectSplashScreen({super.key});
+
+  @override
+  State<MarketConnectSplashScreen> createState() => _MarketConnectSplashScreenState();
+}
+
+class _MarketConnectSplashScreenState extends State<MarketConnectSplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Auto navigate to landing page after 3 seconds
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacementNamed(context, '/landing');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryBg,
+      backgroundColor: backgroundColor,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: constraints.maxWidth * 0.08,
-                      // vertical: 40,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            children: [
+              const Spacer(flex: 2),
+              
+              // Main illustration
+              Container(
+                height: 300,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Phone illustration
+                    Container(
+                      width: 120,
+                      height: 240,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(8),
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: primaryGreen.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Column(
+                    
+                    // People illustrations
+                    Positioned(
+                      left: 0,
+                      bottom: 50,
+                      child: Container(
+                        width: 60,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: darkGreen,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                    ),
+                    
+                    Positioned(
+                      right: 0,
+                      bottom: 30,
+                      child: Container(
+                        width: 50,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          color: accentOrange,
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                    ),
+                    
+                    // Floating elements
+                    Positioned(
+                      top: 20,
+                      right: 20,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: accentOrange,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    
+                    Positioned(
+                      top: 60,
+                      left: 10,
+                      child: Container(
+                        width: 15,
+                        height: 15,
+                        decoration: BoxDecoration(
+                          color: primaryGreen,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const Spacer(),
+              
+              // Title and subtitle
+              Column(
+                children: [
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
                       children: [
-                        // Top illustration section
-                        Expanded(
-                          flex: 2,
-                          child: Center(
-                            child: Image(image: AssetImage('assets/img1.png')),
+                        TextSpan(
+                          text: 'Market\n',
+                          style: TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            color: darkGreen,
+                            height: 1.0,
                           ),
                         ),
-
-                        // Title section
-                        Expanded(
-                          flex: 0,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Market',
-                                style: TextStyle(
-                                  fontSize: _getResponsiveFontSize(context, 48),
-                                  fontWeight: FontWeight.bold,
-                                  color: lightTextColor,
-                                  fontFamily: 'Serif',
-                                ),
-                              ),
-                              Text(
-                                'Connect',
-                                style: TextStyle(
-                                  fontSize: _getResponsiveFontSize(context, 32),
-                                  fontWeight: FontWeight.w400,
-                                  color: lightTextColor,
-                                  fontStyle: FontStyle.italic,
-                                  fontFamily: 'Serif',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Bottom illustration and content
-                        Expanded(
-                          flex: 3,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // _buildBottomIllustration(context),
-                              Image.asset('assets/img2.png',
-                                  width: 200, height: 200),
-                              SizedBox(height: 30),
-
-                              // Description
-                              Text(
-                                'CONNECTING LOCAL FARMERS DIRECTLY WITH BUYERS!',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: _getResponsiveFontSize(context, 12),
-                                  fontWeight: FontWeight.bold,
-                                  color: lightTextColor,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-
-                              SizedBox(height: 15),
-
-                              Text(
-                                'Fresh, Fair, and Fast.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: _getResponsiveFontSize(context, 18),
-                                  fontWeight: FontWeight.w300,
-                                  color: lightTextColor,
-                                  fontStyle: FontStyle.italic,
-                                  fontFamily: 'Serif',
-                                ),
-                              ),
-
-                              SizedBox(height: 40),
-
-                              // Get Started Button
-                              SizedBox(
-                                width: double.infinity,
-                                height: 56,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    // Handle navigation
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/landing',
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: secondaryGreen,
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Get Started',
-                                    style: TextStyle(
-                                      fontSize:
-                                          _getResponsiveFontSize(context, 16),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                        TextSpan(
+                          text: 'Connect',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w600,
+                            color: darkGreen,
+                            fontStyle: FontStyle.italic,
                           ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Connecting Farmers to Markets',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: darkGreen.withOpacity(0.8),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Fresh, Fast, and Fair',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: darkGreen.withOpacity(0.6),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+              
+              const Spacer(),
+              
+              // Get Started button
+              Container(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/landing');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryGreen,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'Get Started',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-            );
-          },
+              
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  double _getResponsiveFontSize(BuildContext context, double baseSize) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double scaleFactor = screenWidth / 375; // Base width (iPhone)
-    return baseSize * scaleFactor.clamp(0.8, 1.2);
   }
 }
