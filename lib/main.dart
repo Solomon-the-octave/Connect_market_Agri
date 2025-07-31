@@ -18,11 +18,11 @@ import 'package:client/widgets/product_card.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const FamCare());
+  runApp(const MarketConnect());
 }
 
-class FamCare extends StatelessWidget {
-  const FamCare({super.key});
+class MarketConnect extends StatelessWidget {
+  const MarketConnect({super.key});
 
   @override
   Widget build(BuildContext context) {

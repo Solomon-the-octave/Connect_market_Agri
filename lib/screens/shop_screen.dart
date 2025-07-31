@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'cart_manager.dart';
 import 'widgets/quantity_selector.dart';
+import 'favorites_manager.dart';
 
 const primaryGreen = Color(0xFF7A8471);
 const lightGreen = Color(0xFFB8C5A8);
@@ -287,6 +288,7 @@ class _HorizontalProductItemState extends State<_HorizontalProductItem> {
   int quantity = 1;
   late double unitPrice;
   late String unit;
+  final FavoritesManager _favoritesManager = FavoritesManager();
 
   @override
   void initState() {
@@ -324,9 +326,46 @@ class _HorizontalProductItemState extends State<_HorizontalProductItem> {
                 topRight: Radius.circular(16),
               ),
             ),
-            child: Image.asset(
-              widget.product['image']!,
-              fit: BoxFit.cover,
+            child: Stack(
+              children: [
+                Image.asset(
+                  widget.product['image']!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isFavorite = !isFavorite;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(isFavorite 
+                            ? '${widget.product['name']} added to favorites!' 
+                            : '${widget.product['name']} removed from favorites!'),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : darkGreen,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
@@ -407,10 +446,27 @@ class _HorizontalProductItemState extends State<_HorizontalProductItem> {
   }
 }
 
-class _ProductGridItem extends StatelessWidget {
+class _ProductGridItem extends StatefulWidget {
   final Map<String, String> product;
 
   const _ProductGridItem({required this.product});
+
+  @override
+  State<_ProductGridItem> createState() => _ProductGridItemState();
+}
+
+class _ProductGridItemState extends State<_ProductGridItem> {
+  int quantity = 1;
+  late double unitPrice;
+  late String unit;
+  final FavoritesManager _favoritesManager = FavoritesManager();
+
+  @override
+  void initState() {
+    super.initState();
+    unitPrice = double.tryParse(widget.product['price']!) ?? 0.0;
+    unit = widget.product['unit'] ?? 'kg';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -430,7 +486,7 @@ class _ProductGridItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 8,
+            flex: 6,
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -440,34 +496,167 @@ class _ProductGridItem extends StatelessWidget {
                   topRight: Radius.circular(16),
                 ),
               ),
-              child: Image.asset(
-                product['image']!,
-                fit: BoxFit.cover,
+              child: Stack(
+                children: [
+                  Image.asset(
+                    widget.product['image']!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _favoritesManager.toggleFavorite(widget.product);
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(_favoritesManager.isFavorite(widget.product) 
+                              ? '${widget.product['name']} added to favorites!' 
+                              : '${widget.product['name']} removed from favorites!'),
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          _favoritesManager.isFavorite(widget.product) ? Icons.favorite : Icons.favorite_border,
+                          color: _favoritesManager.isFavorite(widget.product) ? Colors.red : darkGreen,
+                          size: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product['name']!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: darkGreen,
+          Expanded(
+            flex: 4,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.product['name']!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: darkGreen,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${product['unit']}, Price: \$${product['price']}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: darkGreen.withOpacity(0.7),
+                  const SizedBox(height: 2),
+                  Text(
+                    '$quantity $unit, \$${(unitPrice * quantity).toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: darkGreen.withOpacity(0.7),
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Quantity Controls
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              if (quantity > 1) {
+                                setState(() {
+                                  quantity--;
+                                });
+                              }
+                            },
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: lightGreen,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Icon(
+                                Icons.remove,
+                                size: 12,
+                                color: darkGreen,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            child: Text(
+                              quantity.toString(),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: darkGreen,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                quantity++;
+                              });
+                            },
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: primaryGreen,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                size: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Add Button
+                      GestureDetector(
+                        onTap: () {
+                          CartManager().addToCart(widget.product, quantity, unit, unitPrice);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${widget.product['name']} ($quantity $unit) added to cart!'),
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: primaryGreen,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            'Add',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
