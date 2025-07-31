@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'cart_manager.dart';
 import 'widgets/quantity_selector.dart';
 import 'favorites_manager.dart';
+import 'location_manager.dart';
 
 const primaryGreen = Color(0xFF7A8471);
 const lightGreen = Color(0xFFB8C5A8);
@@ -18,6 +19,8 @@ class ShopScreen extends StatefulWidget {
 
 class _ShopScreenState extends State<ShopScreen> {
   String searchQuery = '';
+  final LocationManager _locationManager = LocationManager();
+  String _currentLocation = 'Dhaka, Banasree';
   final List<Map<String, String>> exclusiveProducts = [
     {'name': 'Red Apple', 'price': '4.99', 'image': 'assets/images/apple.png', 'unit': 'kg'},
     {'name': 'Banana', 'price': '2.99', 'image': 'assets/images/banana.png', 'unit': 'kg'},
@@ -33,6 +36,83 @@ class _ShopScreenState extends State<ShopScreen> {
     {'name': 'Onions', 'price': '7.00', 'image': 'assets/images/onions.png', 'unit': 'kg'},
     {'name': 'Peas', 'price': '9.00', 'image': 'assets/images/peas.png', 'unit': 'kg'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserLocation();
+  }
+
+  Future<void> _loadUserLocation() async {
+    await _locationManager.loadUserLocation();
+    setState(() {
+      _currentLocation = _locationManager.currentLocation;
+    });
+  }
+
+  void _showLocationSelector(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Location'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _locationManager.availableLocations.length,
+              itemBuilder: (context, index) {
+                final location = _locationManager.availableLocations[index];
+                final isSelected = location == _currentLocation;
+                return ListTile(
+                  leading: Icon(
+                    Icons.location_on,
+                    color: isSelected ? primaryGreen : Colors.grey,
+                  ),
+                  title: Text(
+                    location,
+                    style: TextStyle(
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected ? primaryGreen : Colors.black,
+                    ),
+                  ),
+                  trailing: isSelected ? Icon(Icons.check, color: primaryGreen) : null,
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    final success = await _locationManager.updateLocation(location);
+                    if (success) {
+                      setState(() {
+                        _currentLocation = location;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Location updated to $location'),
+                          backgroundColor: primaryGreen,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to update location'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +131,23 @@ class _ShopScreenState extends State<ShopScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  Icon(Icons.location_on, color: darkGreen, size: 20),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Dhaka, Banasree',
-                    style: TextStyle(
-                      color: darkGreen,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                  GestureDetector(
+                    onTap: () => _showLocationSelector(context),
+                    child: Row(
+                      children: [
+                        Icon(Icons.location_on, color: darkGreen, size: 20),
+                        const SizedBox(width: 4),
+                        Text(
+                          _currentLocation,
+                          style: TextStyle(
+                            color: darkGreen,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Icons.keyboard_arrow_down, color: darkGreen, size: 16),
+                      ],
                     ),
                   ),
                   const Spacer(),
@@ -340,11 +429,11 @@ class _HorizontalProductItemState extends State<_HorizontalProductItem> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        isFavorite = !isFavorite;
+                        _favoritesManager.toggleFavorite(widget.product);
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(isFavorite 
+                          content: Text(_favoritesManager.isFavorite(widget.product) 
                             ? '${widget.product['name']} added to favorites!' 
                             : '${widget.product['name']} removed from favorites!'),
                           duration: const Duration(seconds: 1),
@@ -358,8 +447,8 @@ class _HorizontalProductItemState extends State<_HorizontalProductItem> {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : darkGreen,
+                        _favoritesManager.isFavorite(widget.product) ? Icons.favorite : Icons.favorite_border,
+                        color: _favoritesManager.isFavorite(widget.product) ? Colors.red : darkGreen,
                         size: 16,
                       ),
                     ),

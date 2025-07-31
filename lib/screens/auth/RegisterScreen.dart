@@ -18,11 +18,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _locationController = TextEditingController();
 
   String _userType = 'buyer';
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
+
+  final List<String> _availableLocations = [
+    'Dhaka, Banasree',
+    'Dhaka, Dhanmondi',
+    'Dhaka, Gulshan',
+    'Dhaka, Uttara',
+    'Chittagong, Agrabad',
+    'Chittagong, Nasirabad',
+    'Sylhet, Zindabazar',
+    'Rajshahi, Shaheb Bazar',
+    'Khulna, Sonadanga',
+    'Barisal, Sadar',
+  ];
 
   static const primaryGreen = Color(0xFF8B9A7A); 
   static const lightTextColor = Color(0xFF2C3E2D); 
@@ -38,6 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -58,12 +73,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await userCredential.user!
           .updateDisplayName(_fullNameController.text.trim());
 
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      // Prepare user data
+      Map<String, dynamic> userData = {
         'fullName': _fullNameController.text.trim(),
         'email': _emailController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
         'type': _userType,
-      });
+      };
+
+      // Add location for buyers
+      if (_userType == 'buyer' && _locationController.text.trim().isNotEmpty) {
+        userData['location'] = _locationController.text.trim();
+      }
+
+      await _firestore.collection('users').doc(userCredential.user!.uid).set(userData);
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -348,6 +371,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 : 'Please enter a valid email';
                           },
                         ),
+
+                        // Location Field (only for buyers)
+                        if (_userType == 'buyer') ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: lightCardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: tertiaryGreen.withOpacity(0.3)),
+                            ),
+                            child: DropdownButtonFormField<String>(
+                              decoration: InputDecoration(
+                                labelText: 'Location',
+                                hintText: 'Select your location',
+                                prefixIcon: Icon(Icons.location_on_outlined, color: secondaryGreen),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                labelStyle: TextStyle(
+                                  color: lightSecondaryTextColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              value: _locationController.text.isEmpty ? null : _locationController.text,
+                              items: _availableLocations.map((String location) {
+                                return DropdownMenuItem<String>(
+                                  value: location,
+                                  child: Text(location),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _locationController.text = newValue ?? '';
+                                });
+                              },
+                              validator: (value) {
+                                if (_userType == 'buyer' && (value == null || value.isEmpty)) {
+                                  return 'Please select your location';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
 
                         // Password Field
                         _buildCustomTextField(
