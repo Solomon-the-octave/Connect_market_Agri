@@ -18,30 +18,32 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
+  void _showOrdersDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Orders'),
+        content: const Text('No orders available at the moment.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showDeliveryAddressDialog(BuildContext context) {
-    final TextEditingController _controller = TextEditingController(text: 'Kigali, Rwanda');
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delivery Address'),
-        content: TextField(
-          controller: _controller,
-          decoration: const InputDecoration(labelText: 'Address'),
-        ),
+        content: const Text('Default delivery address: Accra, Ghana'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Save updated address logic here
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Address updated')),
-              );
-            },
-            child: const Text('Save'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -165,7 +167,7 @@ class AccountScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           accountTile(Icons.shopping_bag, 'Orders', () {
-            Navigator.pushNamed(context, '/orders');
+            _showOrdersDialog(context);
           }),
           accountTile(Icons.location_on, 'Delivery Address', () {
             _showDeliveryAddressDialog(context);

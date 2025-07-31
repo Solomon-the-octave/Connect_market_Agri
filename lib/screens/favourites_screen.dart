@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'favorites_manager.dart';
 import 'cart_manager.dart';
+import 'widgets/bottom_nav_bar.dart';
 
 const primaryGreen = Color(0xFF7A8471);
 const lightGreen = Color(0xFFB8C5A8);
@@ -70,6 +71,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 },
               ),
             ),
+      bottomNavigationBar: BottomNavBar(currentIndex: 2), // Favorites is index 2
     );
   }
 }

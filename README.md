@@ -26,7 +26,7 @@ This repository contains the complete source code for the Market-Connect mobile 
 
 ---
 
-## 🛠️ Built With
+## Built With
 
 This project is built with a modern mobile development stack:
 

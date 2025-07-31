@@ -4,7 +4,7 @@ class CategoryData {
     'Vegetables': [
       {
         'name': 'Fresh Tomatoes',
-        'imagePath': 'assets/images/tomatoes.png',
+        'imagePath': 'assets/images/tomato.png',
         'description': 'Fresh red tomatoes, perfect for cooking',
         'price': '8.50',
         'unit': 'per kg',
@@ -18,7 +18,7 @@ class CategoryData {
       },
       {
         'name': 'Fresh Onions',
-        'imagePath': 'assets/images/onions.png',
+        'imagePath': 'assets/images/Onions.png',
         'description': 'Yellow onions, locally grown',
         'price': '6.75',
         'unit': 'per kg',
@@ -46,7 +46,7 @@ class CategoryData {
       },
       {
         'name': 'Cucumber',
-        'imagePath': 'assets/images/cucumber.png',
+        'imagePath': 'assets/images/cucumbers.png',
         'description': 'Fresh green cucumbers',
         'price': '4.25',
         'unit': 'per kg',
@@ -62,14 +62,14 @@ class CategoryData {
     'Fruits': [
       {
         'name': 'Fresh Bananas',
-        'imagePath': 'assets/images/bananas.png',
+        'imagePath': 'assets/images/banana.png',
         'description': 'Sweet ripe bananas',
         'price': '4.50',
         'unit': 'per dozen',
       },
       {
         'name': 'Red Apples',
-        'imagePath': 'assets/images/apples.png',
+        'imagePath': 'assets/images/apple.png',
         'description': 'Crisp red apples',
         'price': '15.00',
         'unit': 'per kg',
