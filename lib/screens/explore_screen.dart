@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'widgets/product_card.dart';
 import 'widgets/bottom_nav_bar.dart';
+import 'category_screen.dart';
+import '../data/category_data.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -46,32 +48,128 @@ class ExploreScreen extends StatelessWidget {
                 mainAxisSpacing: 12,
                 childAspectRatio: 3, 
                 children: [
-                  ProductCard(
-                    imagePath: 'assets/images/vegetables.png',
-                    title: 'Vegetables',
-                    weight: '120 items',
-                    price: '',
+                  _buildCategoryCard(
+                    context,
+                    'assets/images/vegetables.png',
+                    'Vegetables',
+                    '${CategoryData.getItemsForCategory('Vegetables').length} items',
                   ),
-                  ProductCard(
-                    imagePath: 'assets/images/fruits.png',
-                    title: 'Fruits',
-                    weight: '96 items',
-                    price: '',
+                  _buildCategoryCard(
+                    context,
+                    'assets/images/fruits.png',
+                    'Fruits',
+                    '${CategoryData.getItemsForCategory('Fruits').length} items',
                   ),
-                  ProductCard(
-                    imagePath: 'assets/images/beverages.png',
-                    title: 'Beverages',
-                    weight: '58 items',
-                    price: '',
+                  _buildCategoryCard(
+                    context,
+                    'assets/images/beverages.png',
+                    'Beverages',
+                    '${CategoryData.getItemsForCategory('Beverages').length} items',
                   ),
-                  ProductCard(
-                    imagePath: 'assets/images/flour.png',
-                    title: 'Flour',
-                    weight: '72 items',
-                    price: '',
+                  _buildCategoryCard(
+                    context,
+                    'assets/images/flour.png',
+                    'Flour',
+                    '${CategoryData.getItemsForCategory('Flour').length} items',
                   ),
                 ],
               )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(
+    BuildContext context,
+    String imagePath,
+    String title,
+    String itemCount,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        final items = CategoryData.getItemsForCategory(title);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CategoryScreen(
+              categoryName: title,
+              items: items,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  imagePath,
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFB8C5A8).withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        color: Color(0xFF8B9A7A),
+                        size: 24,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2C3E2D),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      itemCount,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF4A5A4B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Color(0xFF8B9A7A),
+                size: 16,
+              ),
             ],
           ),
         ),

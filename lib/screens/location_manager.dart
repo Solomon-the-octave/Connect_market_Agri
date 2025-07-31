@@ -6,19 +6,21 @@ class LocationManager {
   factory LocationManager() => _instance;
   LocationManager._internal();
 
-  String _currentLocation = 'Dhaka, Banasree';
+  String _currentLocation = 'Accra, East Legon';
   
   final List<String> availableLocations = [
-    'Dhaka, Banasree',
-    'Dhaka, Dhanmondi',
-    'Dhaka, Gulshan',
-    'Dhaka, Uttara',
-    'Chittagong, Agrabad',
-    'Chittagong, Nasirabad',
-    'Sylhet, Zindabazar',
-    'Rajshahi, Shaheb Bazar',
-    'Khulna, Sonadanga',
-    'Barisal, Sadar',
+    'Accra, East Legon',
+    'Accra, Osu',
+    'Accra, Adabraka',
+    'Kumasi, Adum',
+    'Kumasi, Bantama',
+    'Tamale, Central',
+    'Cape Coast, University',
+    'Takoradi, Market Circle',
+    'Ho, Bankoe',
+    'Sunyani, Bono Ahafo',
+    'Koforidua, New Juaben',
+    'Wa, Upper West',
   ];
   
   String get currentLocation => _currentLocation;

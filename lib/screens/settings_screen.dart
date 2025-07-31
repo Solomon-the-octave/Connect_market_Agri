@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'widgets/bottom_nav_bar.dart'; // <-- Add this import
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'widgets/bottom_nav_bar.dart'; // Make sure this file exists
 
-// Color palette matching Figma design
-const primaryGreen = Color(0xFF7A8471);
-const lightGreen = Color(0xFFB8C5A8);
-const darkGreen = Color(0xFF5A6B4F);
-const accentOrange = Color(0xFFE67E22);
+// Color constants
+const primaryGreen = Color(0xFF8B9A7A);
 const backgroundColor = Color(0xFFB8C5A8);
+const darkGreen = Color(0xFF2C3E2D);
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,77 +16,42 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final List<Map<String, dynamic>> settingsItems = [
-    {
-      'icon': Icons.shopping_bag_outlined,
-      'title': 'Orders',
-      'route': '/orders',
-    },
-    {
-      'icon': Icons.person_outline,
-      'title': 'My Details',
-      'route': '/profile',
-    },
-    {
-      'icon': Icons.location_on_outlined,
-      'title': 'Delivery Address',
-      'route': '/address',
-    },
-    {
-      'icon': Icons.payment_outlined,
-      'title': 'Payment Methods',
-      'route': '/payment',
-    },
-    {
-      'icon': Icons.card_giftcard_outlined,
-      'title': 'Promo Card',
-      'route': '/promo',
-    },
-    {
-      'icon': Icons.notifications_outlined,
-      'title': 'Notifications',
-      'route': '/notifications',
-    },
-    {
-      'icon': Icons.help_outline,
-      'title': 'Help',
-      'route': '/help',
-    },
-    {
-      'icon': Icons.info_outline,
-      'title': 'About',
-      'route': '/about',
-    },
-  ];
+  bool _notificationsEnabled = true;
+  bool _locationServicesEnabled = true;
+  bool _darkModeEnabled = false;
+  String _selectedLanguage = 'English';
+
+  final List<String> _languages = ['English', 'Twi', 'Ga', 'Ewe', 'Hausa'];
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text(
+          'Settings',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: darkGreen,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: darkGreen),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Account',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: darkGreen,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Profile Section
+            // User Profile Card
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
+              width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -94,182 +59,320 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
+                    blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
-              child: Row(
+              child: Column(
                 children: [
-                  // Profile Avatar
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: primaryGreen.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      size: 30,
-                      color: primaryGreen,
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: primaryGreen.withOpacity(0.2),
+                    child: Icon(Icons.person, size: 40, color: primaryGreen),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    user?.displayName ?? 'User',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: darkGreen,
                     ),
                   ),
-                  
-                  const SizedBox(width: 16),
-                  
-                  // Profile Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Afsar Hossen',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: darkGreen,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Imshuvo97@gmail.com',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                    user?.email ?? 'user@example.com',
+                    style: const TextStyle(fontSize: 16, color: Color(0xFF4A5A4B)),
                   ),
-                  
-                  // Edit Icon
-                  Icon(
-                    Icons.edit_outlined,
-                    color: primaryGreen,
-                    size: 20,
+                  const SizedBox(height: 16),
+                  FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance.collection('users').doc(user?.uid).get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data!.exists) {
+                        final userData = snapshot.data!.data() as Map<String, dynamic>;
+                        final userType = userData['type'] as String? ?? 'buyer';
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: userType == 'farmer' ? Colors.green : primaryGreen,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            userType.toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox();
+                    },
                   ),
                 ],
               ),
             ),
-            
             const SizedBox(height: 24),
-            
-            // Settings List
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: settingsItems.length,
-                itemBuilder: (context, index) {
-                  final item = settingsItems[index];
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+
+            // Settings Section
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  _buildSettingItem(
+                    Icons.notifications_outlined,
+                    'Push Notifications',
+                    'Receive notifications about orders and updates',
+                    Switch(
+                      value: _notificationsEnabled,
+                      onChanged: (value) {
+                        setState(() {
+                          _notificationsEnabled = value;
+                        });
+                      },
+                      activeColor: primaryGreen,
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  _buildSettingItem(
+                    Icons.location_on_outlined,
+                    'Location Services',
+                    'Allow app to access your location',
+                    Switch(
+                      value: _locationServicesEnabled,
+                      onChanged: (value) {
+                        setState(() {
+                          _locationServicesEnabled = value;
+                        });
+                      },
+                      activeColor: primaryGreen,
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  _buildSettingItem(
+                    Icons.language_outlined,
+                    'Language',
+                    'Select your preferred language',
+                    DropdownButton<String>(
+                      value: _selectedLanguage,
+                      underline: const SizedBox(),
+                      items: _languages.map((language) {
+                        return DropdownMenuItem(value: language, child: Text(language));
+                      }).toList(),
+                      onChanged: (newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            _selectedLanguage = newValue;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  _buildSettingItem(
+                    Icons.dark_mode_outlined,
+                    'Dark Mode',
+                    'Switch to dark theme',
+                    Switch(
+                      value: _darkModeEnabled,
+                      onChanged: (value) {
+                        setState(() {
+                          _darkModeEnabled = value;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Dark mode coming soon!'),
+                            backgroundColor: primaryGreen,
+                          ),
+                        );
+                      },
+                      activeColor: primaryGreen,
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  _buildSettingItem(
+                    Icons.security_outlined,
+                    'Privacy & Security',
+                    'Manage your privacy settings',
+                    const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                    onTap: () => _showPrivacyDialog(context),
+                  ),
+                  const Divider(height: 1),
+                  _buildSettingItem(
+                    Icons.info_outline,
+                    'About App',
+                    'Version info and app details',
+                    const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                    onTap: () => _showAboutDialog(context),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Logout Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Logout'),
+                      content: const Text('Are you sure you want to logout?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            FirebaseAuth.instance.signOut();
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              '/landing',
+                              (route) => false,
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                          child: const Text('Logout'),
                         ),
                       ],
                     ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      leading: Icon(
-                        item['icon'],
-                        color: darkGreen,
-                        size: 24,
-                      ),
-                      title: Text(
-                        item['title'],
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: darkGreen,
-                        ),
-                      ),
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.grey[400],
-                        size: 16,
-                      ),
-                      onTap: () {
-                        // Navigate to respective screen
-                        Navigator.pushNamed(context, item['route']);
-                      },
-                    ),
                   );
                 },
-              ),
-            ),
-            
-            // Logout Button
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Logout'),
-                        content: const Text('Are you sure you want to logout?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                '/landing',
-                                (route) => false,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                            child: const Text('Logout'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[100],
-                    foregroundColor: darkGreen,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[100],
+                  foregroundColor: darkGreen,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.logout, color: darkGreen),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Log Out',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.logout, color: darkGreen),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Log Out',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(currentIndex: 3), // <-- Use your custom nav bar, index 3 for Account/Settings
+      bottomNavigationBar: BottomNavBar(currentIndex: 3),
+    );
+  }
+
+  Widget _buildSettingItem(
+    IconData icon,
+    String title,
+    String subtitle,
+    Widget trailing, {
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: primaryGreen, size: 24),
+      title: Text(title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: darkGreen,
+          )),
+      subtitle: Text(subtitle, style: const TextStyle(fontSize: 14, color: Color(0xFF4A5A4B))),
+      trailing: trailing,
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+    );
+  }
+
+  void _showPrivacyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Privacy & Security'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Data Protection', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            SizedBox(height: 8),
+            Text(
+              '• Your personal information is encrypted and secure\n'
+              '• Payment details are never stored on our servers\n'
+              '• Location data is only used for delivery purposes\n'
+              '• You can delete your account anytime',
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 16),
+            Text('Account Security', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            SizedBox(height: 8),
+            Text(
+              '• Two-factor authentication available\n'
+              '• Regular security updates\n'
+              '• Secure login with Firebase Auth',
+              style: TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('About Connect Market Agri'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Version 1.0.0', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            SizedBox(height: 16),
+            Text(
+              'Connect Market Agri is Ghana\'s premier agricultural marketplace connecting farmers directly with buyers.',
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 16),
+            Text('Features:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            SizedBox(height: 8),
+            Text(
+              '• Direct farmer-to-buyer connections\n'
+              '• Secure payment processing\n'
+              '• Real-time order tracking\n'
+              '• Multiple payment methods\n'
+              '• Location-based delivery',
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 16),
+            Text('© 2024 Connect Market Agri\nMade in Ghana 🇬🇭',
+                style: TextStyle(fontSize: 12, color: Colors.grey)),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+        ],
+      ),
     );
   }
 }

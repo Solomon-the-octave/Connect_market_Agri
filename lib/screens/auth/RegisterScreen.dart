@@ -26,16 +26,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
 
   final List<String> _availableLocations = [
-    'Dhaka, Banasree',
-    'Dhaka, Dhanmondi',
-    'Dhaka, Gulshan',
-    'Dhaka, Uttara',
-    'Chittagong, Agrabad',
-    'Chittagong, Nasirabad',
-    'Sylhet, Zindabazar',
-    'Rajshahi, Shaheb Bazar',
-    'Khulna, Sonadanga',
-    'Barisal, Sadar',
+    'Accra, East Legon',
+    'Accra, Osu',
+    'Accra, Adabraka',
+    'Kumasi, Adum',
+    'Kumasi, Bantama',
+    'Tamale, Central',
+    'Cape Coast, University',
+    'Takoradi, Market Circle',
+    'Ho, Bankoe',
+    'Sunyani, Bono Ahafo',
+    'Koforidua, New Juaben',
+    'Wa, Upper West',
   ];
 
   static const primaryGreen = Color(0xFF8B9A7A); 
