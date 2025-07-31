@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'widgets/bottom_nav_bar.dart'; // Make sure this file exists
+import 'package:shared_preferences/shared_preferences.dart';
+import 'widgets/bottom_nav_bar.dart'; 
 
 // Color constants
 const primaryGreen = Color(0xFF8B9A7A);
@@ -20,8 +21,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _locationServicesEnabled = true;
   bool _darkModeEnabled = false;
   String _selectedLanguage = 'English';
+  bool _autoBackupEnabled = false;
+  String _defaultCurrency = 'GHS';
 
   final List<String> _languages = ['English', 'Twi', 'Ga', 'Ewe', 'Hausa'];
+  final List<String> _currencies = ['GHS', 'USD', 'EUR', 'GBP'];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  // Load preferences from SharedPreferences
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
+      _locationServicesEnabled = prefs.getBool('location_services_enabled') ?? true;
+      _darkModeEnabled = prefs.getBool('dark_mode_enabled') ?? false;
+      _selectedLanguage = prefs.getString('selected_language') ?? 'English';
+      _autoBackupEnabled = prefs.getBool('auto_backup_enabled') ?? false;
+      _defaultCurrency = prefs.getString('default_currency') ?? 'GHS';
+    });
+  }
+
+  // Save individual preference
+  Future<void> _savePreference(String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is bool) {
+      await prefs.setBool(key, value);
+    } else if (value is String) {
+      await prefs.setString(key, value);
+    }
+    
+    // Show confirmation
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Preference saved successfully'),
+          backgroundColor: primaryGreen,
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         setState(() {
                           _notificationsEnabled = value;
                         });
+                        _savePreference('notifications_enabled', value);
                       },
                       activeColor: primaryGreen,
                     ),
@@ -156,6 +201,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         setState(() {
                           _locationServicesEnabled = value;
                         });
+                        _savePreference('location_services_enabled', value);
                       },
                       activeColor: primaryGreen,
                     ),
@@ -176,6 +222,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           setState(() {
                             _selectedLanguage = newValue;
                           });
+                          _savePreference('selected_language', newValue);
                         }
                       },
                     ),
@@ -191,14 +238,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         setState(() {
                           _darkModeEnabled = value;
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Dark mode coming soon!'),
-                            backgroundColor: primaryGreen,
-                          ),
-                        );
+                        _savePreference('dark_mode_enabled', value);
                       },
                       activeColor: primaryGreen,
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  _buildSettingItem(
+                    Icons.backup_outlined,
+                    'Auto Backup',
+                    'Automatically backup your data',
+                    Switch(
+                      value: _autoBackupEnabled,
+                      onChanged: (value) {
+                        setState(() {
+                          _autoBackupEnabled = value;
+                        });
+                        _savePreference('auto_backup_enabled', value);
+                      },
+                      activeColor: primaryGreen,
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  _buildSettingItem(
+                    Icons.attach_money_outlined,
+                    'Default Currency',
+                    'Select your preferred currency',
+                    DropdownButton<String>(
+                      value: _defaultCurrency,
+                      underline: const SizedBox(),
+                      items: _currencies.map((currency) {
+                        return DropdownMenuItem(value: currency, child: Text(currency));
+                      }).toList(),
+                      onChanged: (newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            _defaultCurrency = newValue;
+                          });
+                          _savePreference('default_currency', newValue);
+                        }
+                      },
                     ),
                   ),
                   const Divider(height: 1),
